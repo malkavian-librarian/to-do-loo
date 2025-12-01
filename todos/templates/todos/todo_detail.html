@@ -1,0 +1,64 @@
+{% extends 'todos/base.html' %}
+
+{% block title %}{{ todo.title }} - To-Do Detail{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>{{ todo.title }}</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'todo-edit' todo.id %}" class="btn btn-warning">Edit</a>
+        <a href="{% url 'todo-list' %}" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h5 class="card-title">Description</h5>
+                {% if todo.description %}
+                    <p class="card-text">{{ todo.description|linebreaks }}</p>
+                {% else %}
+                    <p class="text-muted">No description provided.</p>
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title">Status</h6>
+                        {% if todo.completed %}
+                            <span class="badge bg-success">✓ Completed</span>
+                        {% else %}
+                            <span class="badge bg-warning">⏳ Pending</span>
+                        {% endif %}
+
+                        {% if todo.due_date %}
+                            <h6 class="card-title mt-3">Due Date</h6>
+                            <p class="card-text">{{ todo.due_date|date:"M d, Y - H:i" }}</p>
+                        {% endif %}
+
+                        <h6 class="card-title mt-3">Created</h6>
+                        <p class="card-text small">{{ todo.created_at|date:"M d, Y - H:i" }}</p>
+
+                        <h6 class="card-title mt-3">Last Updated</h6>
+                        <p class="card-text small">{{ todo.updated_at|date:"M d, Y - H:i" }}</p>
+
+                        <form method="post" action="{% url 'todo-toggle' todo.id %}" class="mt-4">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm {% if todo.completed %}btn-warning{% else %}btn-success{% endif %}">
+                                {% if todo.completed %}Mark as Pending{% else %}Mark as Completed{% endif %}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'todo-delete' todo.id %}" class="btn btn-danger">Delete</a>
+</div>
+{% endblock %}
